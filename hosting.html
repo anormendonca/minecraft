@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ntrxi - Free Minecraft Hosting Index</title>
+    <title>ntrxi - Minecraft Hosting Index</title>
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
@@ -288,6 +287,13 @@
             z-index: 1;
         }
 
+        .result-count {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+            padding-left: 4px;
+        }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -330,6 +336,13 @@
             line-height: 1.2;
         }
 
+        .badge-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+        }
+
         .type-badge {
             font-size: 0.7rem;
             font-weight: 600;
@@ -350,6 +363,18 @@
             background: rgba(59, 130, 246, 0.15);
             color: #60a5fa;
             border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .badge-free {
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .badge-paid {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
         .specs-list {
@@ -454,6 +479,81 @@
             font-size: 0.85rem;
         }
 
+        /* --- INLINE SVG ICONS (no icon font needed) --- */
+        .ico {
+            width: 1em;
+            height: 1em;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            vertical-align: -0.125em;
+            flex-shrink: 0;
+        }
+        i[data-icon] { display: inline-flex; align-items: center; font-style: normal; }
+        .control-label { display: inline-flex; align-items: center; gap: 6px; }
+
+        /* --- FEATURE TAGS --- */
+        .tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+        .feat-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+        .feat-yes { background: rgba(34, 197, 94, 0.12); color: #4ade80; border-color: rgba(34, 197, 94, 0.3); }
+        .feat-no { background: rgba(239, 68, 68, 0.12); color: #f87171; border-color: rgba(239, 68, 68, 0.3); }
+        .feat-unk { background: rgba(255, 255, 255, 0.04); color: var(--text-muted); }
+        .feat-host { background: rgba(59, 130, 246, 0.12); color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); }
+
+        .pill-btn .ico { width: 14px; height: 14px; }
+
+        /* --- PLANS LIST --- */
+        .plans {
+            margin-bottom: 18px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            overflow: hidden;
+        }
+        .plans summary {
+            cursor: pointer;
+            list-style: none;
+            padding: 10px 14px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .plans summary::-webkit-details-marker { display: none; }
+        .plans summary::after { content: '+'; margin-left: auto; color: var(--text-muted); font-size: 1rem; }
+        .plans[open] summary::after { content: '\2212'; }
+        .plan-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.8rem;
+        }
+        .plan-name { font-weight: 600; color: var(--text-main); }
+        .plan-desc { color: var(--text-muted); margin-top: 2px; font-size: 0.75rem; line-height: 1.35; }
+        .plan-price { font-family: monospace; font-weight: 600; color: #fbbf24; text-align: right; white-space: nowrap; }
+        .plans-note { padding: 8px 14px 12px; font-size: 0.7rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.05); }
+
         /* RESPONSIVE DESIGN */
         @media (max-width: 850px) {
             .hero-card {
@@ -494,11 +594,11 @@
             <!-- Search Hero Content -->
             <div class="search-hero-content">
                 <h1 class="brand-heading">Hosting Index<span>*</span></h1>
-                <p class="hero-subtext">Compare free Minecraft server hosts, cloud VMs, reverse proxies, and self-hosting tools.</p>
+                <p class="hero-subtext">Compare free and paid Minecraft server hosts, cloud VMs, reverse proxies, and self-hosting tools.</p>
                 
                 <div class="search-box">
                     <input type="text" id="searchInput" placeholder="Search hosts, CPUs, or tunneling tools..." oninput="handleSearch()">
-                    <i class="fas fa-search search-icon"></i>
+                    <i data-icon="search" class="search-icon"></i>
                 </div>
             </div>
 
@@ -508,9 +608,18 @@
     <!-- CONTROLS & FILTERS -->
     <section class="controls-container">
         <div class="controls-card">
+
+            <div class="control-group">
+                <span class="control-label"><i data-icon="tag"></i> Pricing</span>
+                <div class="pill-group" id="pricingGroup">
+                    <button class="pill-btn active" onclick="filterPricing('all', this)">All</button>
+                    <button class="pill-btn" onclick="filterPricing('free', this)">Free</button>
+                    <button class="pill-btn" onclick="filterPricing('paid', this)">Paid</button>
+                </div>
+            </div>
             
             <div class="control-group">
-                <span class="control-label"><i class="fas fa-filter"></i> Category</span>
+                <span class="control-label"><i data-icon="filter"></i> Category</span>
                 <div class="pill-group" id="categoryGroup">
                     <button class="pill-btn active" onclick="filterType('all', this)">All Types</button>
                     <button class="pill-btn" onclick="filterType('web', this)">Web Hosting</button>
@@ -519,7 +628,15 @@
             </div>
 
             <div class="control-group">
-                <span class="control-label"><i class="fas fa-sort"></i> Sort By</span>
+                <span class="control-label"><i data-icon="check"></i> Features</span>
+                <div class="pill-group" id="featureGroup">
+                    <button class="pill-btn" id="btnCracked" onclick="toggleFeature('cracked', this)"><i data-icon="unlock"></i> Cracked</button>
+                    <button class="pill-btn" id="btn247" onclick="toggleFeature('always247', this)"><i data-icon="clock"></i> 24/7</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <span class="control-label"><i data-icon="sort"></i> Sort By</span>
                 <div class="pill-group" id="sortGroup">
                     <button class="pill-btn active" onclick="sortData('default', this)">Default</button>
                     <button class="pill-btn" onclick="sortData('ram-desc', this)">RAM (High → Low)</button>
@@ -533,6 +650,7 @@
 
     <!-- MAIN HOST LIST -->
     <main class="content-container">
+        <div id="result-count" class="result-count"></div>
         <div id="host-list" class="grid"></div>
     </main>
 
@@ -552,8 +670,9 @@
     <!-- SCRIPT DATA & RENDERER -->
     <script>
     // --- MASTER HOSTING LIST ---
+    // pricing: "free" (default if omitted) or "paid"
     const masterList = [
-        // --- WEB HOSTING (Category: web) --- 
+        // --- FREE WEB HOSTING (Category: web) --- 
         { name: "FalixNodes", ram: 4.0, storage: "10 GB", cpu: "AMD Ryzen 9 9950X3D", power: 5, type: "web" },
         { name: "Tick Hosting", ram: 8.0, storage: "15 GB", cpu: "AMD EPYC 4585PX", power: 5, type: "web" },
         { name: "MagmaNode", ram: 2.5, storage: "5 GB", cpu: "AMD Ryzen 9 7950X3D", power: 5, type: "web" },
@@ -625,10 +744,80 @@
         { name: "EndermanHost", ram: 2.0, storage: "8 GB", cpu: "AMD EPYC", power: 3, type: "web" },
         { name: "BorneaServer", ram: 3.0, storage: "10 GB", cpu: "Intel Xeon", power: 3, type: "web" },
         { name: "Serv00 (FreeBSD shell)", ram: 0.5, storage: "3 GB", cpu: "Shared FreeBSD Core", power: 2, type: "web" },
-        { name: "AWS EC2 Free Tier (12 Mos)", ram: 1.0, storage: "30 GB", cpu: "AWS Graviton / Xeon", power: 3, type: "web" },
         { name: "GCP Always Free Tier", ram: 1.0, storage: "30 GB", cpu: "Google Cloud E2 Shared", power: 2, type: "web" },
-        { name: "Azure Free Tier (12 Mos)", ram: 1.0, storage: "64 GB", cpu: "Azure Standard vCPU", power: 2, type: "web" },
-        
+
+        // --- NEW FREE WEB HOSTS (specs vary by plan/promo - verify before relying on them) ---
+        { name: "Wispbyte", ram: 1.0, storage: "Check site", cpu: "Shared Node", power: 3, type: "web", displayRam: "Varies" },
+        { name: "Katabump", ram: 1.0, storage: "Check site", cpu: "Shared Node", power: 3, type: "web", displayRam: "Varies" },
+        { name: "Bot-Hosting.net", ram: 1.0, storage: "Check site", cpu: "Shared Node", power: 2, type: "web", displayRam: "Varies" },
+        { name: "Sillydev", ram: 1.0, storage: "Check site", cpu: "Shared Node", power: 3, type: "web", displayRam: "Varies" },
+
+        // --- PAID WEB HOSTING (Minecraft-focused, well-established) ---
+        // plans: [{ n: name, d: details, p: price }]. Prices are approximate list prices in USD and change with promos/terms.
+        { name: "BisectHosting", ram: 32.0, storage: "Unlimited NVMe", cpu: "Modern Ryzen nodes", power: 5, type: "web", pricing: "paid", displayRam: "Per-GB", cracked: null,
+          plans: [
+            { n: "Budget", d: "Per-GB RAM, shared slots, no dedicated IP", p: "~$3.25/GB" },
+            { n: "Premium", d: "Per-GB RAM, unlimited slots, dedicated IP, daily backups, modpack installs", p: "~$4.99/GB" }
+          ] },
+        { name: "Apex Hosting", ram: 32.0, storage: "NVMe RAID 1", cpu: "AMD Ryzen 9 7950X", power: 5, type: "web", pricing: "paid", displayRam: "Per-GB", cracked: null,
+          plans: [
+            { n: "1 GB", d: "Entry plan, Java or Bedrock", p: "$3.99/mo" },
+            { n: "4 GB", d: "Intro price for first month, then renews higher", p: "~$14.99/mo" },
+            { n: "8 GB", d: "Scales per GB from here", p: "~$27.99/mo" }
+          ] },
+        { name: "Shockbyte", ram: 32.0, storage: "NVMe", cpu: "AMD EPYC 4464P", power: 4, type: "web", pricing: "paid", displayRam: "Per-GB", cracked: true,
+          plans: [
+            { n: "Budget", d: "Entry-level plans", p: "from $1.99/mo" },
+            { n: "Iron (4 GB)", d: "Premium line on NVMe", p: "~$11.19/mo" }
+          ] },
+        { name: "PebbleHost", ram: 32.0, storage: "NVMe", cpu: "Modern Ryzen nodes", power: 5, type: "web", pricing: "paid", displayRam: "Per-GB", cracked: null,
+          plans: [
+            { n: "Budget", d: "Per-GB RAM", p: "$1/GB" },
+            { n: "Premium", d: "Per-GB RAM, one-click modpacks, daily + hourly backups, extra locations", p: "$2.25/GB" }
+          ] },
+        { name: "Sparked Host", ram: 32.0, storage: "NVMe", cpu: "Up to Ryzen 9 9900X", power: 5, type: "web", pricing: "paid", displayRam: "Per-GB", cracked: null,
+          plans: [
+            { n: "Budget", d: "Per-GB RAM, entry hardware", p: "$1/GB" },
+            { n: "Enterprise", d: "Per-GB RAM, faster hardware", p: "$2.59/GB" },
+            { n: "Extreme", d: "Ryzen 9 9900X, highest single-thread speed", p: "Premium per-GB" }
+          ] },
+        { name: "ScalaCube", ram: 32.0, storage: "NVMe", cpu: "Ryzen 9 9950X3D / EPYC 9474F", power: 4, type: "web", pricing: "paid", displayRam: "Per-GB", cracked: true,
+          plans: [
+            { n: "RAM-based plans", d: "Pick your RAM size, one-click modpacks", p: "See site" }
+          ] },
+        { name: "Nodecraft", ram: 32.0, storage: "NVMe", cpu: "Dedicated game nodes", power: 4, type: "web", pricing: "paid", displayRam: "Per-GB", cracked: null,
+          plans: [
+            { n: "Per-GB plans", d: "27 locations, 7-day refund window", p: "from ~$2.98/GB" }
+          ] },
+        { name: "HostHavoc", ram: 32.0, storage: "Plan-based", cpu: "Modern Ryzen nodes", power: 5, type: "web", pricing: "paid", displayRam: "Per-GB", cracked: null,
+          plans: [ { n: "Plans not verified yet", d: "Check the host's site for current tiers", p: "—" } ] },
+        { name: "Akliz", ram: 32.0, storage: "Plan-based", cpu: "Dedicated game nodes", power: 4, type: "web", pricing: "paid", displayRam: "Per-GB", cracked: null,
+          plans: [ { n: "Plans not verified yet", d: "Check the host's site for current tiers", p: "—" } ] },
+        { name: "Kinetic Hosting", ram: 32.0, storage: "Plan-based", cpu: "Modern Ryzen nodes", power: 4, type: "web", pricing: "paid", displayRam: "Per-GB", cracked: null,
+          plans: [ { n: "Plans not verified yet", d: "Check the host's site for current tiers", p: "—" } ] },
+        { name: "GGServers", ram: 32.0, storage: "SSD", cpu: "3.2-4 GHz CPU, DDR4", power: 3, type: "web", pricing: "paid", displayRam: "10 tiers", cracked: null,
+          plans: [
+            { n: "Standard", d: "Ten RAM tiers, DDR4 + SSD", p: "See site" },
+            { n: "Premium", d: "Same tiers on faster hardware", p: "2x Standard" }
+          ] },
+        { name: "Hostinger (Minecraft VPS)", ram: 32.0, storage: "50-400 GB NVMe", cpu: "AMD EPYC (KVM VPS)", power: 4, type: "web", pricing: "paid", displayRam: "4-32 GB", cracked: true,
+          plans: [
+            { n: "Game Panel 1", d: "4 GB RAM, 1 vCPU, 50 GB NVMe", p: "~$4.99/mo*" },
+            { n: "Game Panel 2", d: "8 GB RAM, 2 vCPU, 100 GB NVMe", p: "~$5.99/mo*" },
+            { n: "Game Panel 4", d: "16 GB RAM, 4 vCPU, 200 GB NVMe", p: "~$10.49/mo*" },
+            { n: "Game Panel 8", d: "32 GB RAM, 8 vCPU, 400 GB NVMe", p: "~$19.99/mo*" }
+          ], planNote: "*24-month promo price. Monthly billing and renewals cost more." },
+
+        // --- PAID VPS / CLOUD (DIY - you run the server yourself) ---
+        { name: "Hetzner Cloud", ram: 32.0, storage: "Plan-based", cpu: "AMD EPYC / Intel / Ampere ARM", power: 5, type: "web", pricing: "paid", displayRam: "Any size", cracked: true,
+          plans: [ { n: "Cloud VPS", d: "Pick any size, shared or dedicated vCPU, x86 or ARM, hourly billing", p: "See site" } ] },
+        { name: "OVHcloud VPS", ram: 32.0, storage: "Plan-based", cpu: "Shared / Dedicated vCores", power: 4, type: "web", pricing: "paid", displayRam: "Any size", cracked: true,
+          plans: [ { n: "VPS range", d: "Several VPS tiers with unmetered traffic on most", p: "See site" } ] },
+        { name: "DigitalOcean Droplets", ram: 32.0, storage: "Plan-based", cpu: "Shared / Dedicated vCPU", power: 4, type: "web", pricing: "paid", displayRam: "Any size", cracked: true,
+          plans: [ { n: "Droplets", d: "Basic and CPU-optimized sizes, hourly billing", p: "See site" } ] },
+        { name: "Vultr High Frequency", ram: 32.0, storage: "Plan-based", cpu: "High-frequency vCPU", power: 5, type: "web", pricing: "paid", displayRam: "Any size", cracked: true,
+          plans: [ { n: "High Frequency", d: "NVMe, high clock speed, hourly billing", p: "See site" } ] },
+
         // --- SELF-HOSTING & TOOLS (Category: self) ---
         { name: "e4mc", ram: 999, storage: "Local", cpu: "User CPU", power: 5, type: "self", displayRam: "Your PC" },
         { name: "Essential Mod", ram: 999, storage: "Local", cpu: "User CPU", power: 5, type: "self", displayRam: "Your PC" },
@@ -668,23 +857,108 @@
         { name: "SoftEther VPN", ram: 0.3, storage: "N/A", cpu: "Virtual Ethernet", power: 4, type: "self", displayRam: "Virtual LAN" },
         { name: "Localtunnel", ram: 0.1, storage: "N/A", cpu: "Node.js Tunnel", power: 3, type: "self", displayRam: "Tunnel Only" },
         { name: "Inlets", ram: 0.1, storage: "N/A", cpu: "TCP Reverse Proxy", power: 4, type: "self", displayRam: "Tunnel Only" },
-        { name: "PageKite", ram: 0.1, storage: "N/A", cpu: "Python Relay", power: 3, type: "self", displayRam: "Tunnel Only" }
+        { name: "PageKite", ram: 0.1, storage: "N/A", cpu: "Python Relay", power: 3, type: "self", displayRam: "Tunnel Only" },
+        { name: "SakuraFrp", ram: 0.1, storage: "N/A", cpu: "Frp-based Tunnel", power: 4, type: "self", displayRam: "Tunnel Only" },
+        { name: "Pangolin", ram: 0.2, storage: "N/A", cpu: "Self-hosted Tunnel Proxy", power: 4, type: "self", displayRam: "Proxy" }
     ];
 
+    // Anything without an explicit pricing tag is treated as free
+    masterList.forEach(item => { if (!item.pricing) item.pricing = 'free'; });
+
+    // --- FEATURE DATA ---
+    // cracked: true / false / null (null = not confirmed)
+    // always247: true / false / 'host' (depends on your own PC) / null (not confirmed)
+    const CRACKED_YES = [
+        "Aternos", "Oracle Cloud ARM", "Oracle Cloud AMD", "GCP Always Free Tier", "Github Codespaces", "Google Colab", "Server.pro",
+        "Playit.gg", "Pinggy", "Ngrok", "Portmap.io", "LocalXpose", "Tailscale", "ZeroTier One", "WireGuard Mesh", "Radmin VPN", "Hamachi",
+        "Cloudflare Warp", "Bore (Tunnel Tool)", "Frp (Fast Reverse Proxy)", "Chisel Tunnel", "Rathole Tunnel", "Cloudflare Tunnel", "Zrok",
+        "Packetriot", "Crafty Controller", "Pterodactyl Panel", "PufferPanel", "LinuxGSM", "Velocity Proxy", "NetBird", "SoftEther VPN",
+        "Localtunnel", "Inlets", "PageKite", "SakuraFrp", "Pangolin"
+    ];
+    const NO_247 = ["Aternos", "Minehut", "Github Codespaces", "Google Colab"];
+    const YES_247_FREE = ["Oracle Cloud ARM", "Oracle Cloud AMD", "GCP Always Free Tier"];
+
+    masterList.forEach(item => {
+        if (item.cracked === undefined) item.cracked = CRACKED_YES.includes(item.name) ? true : null;
+        if (item.always247 === undefined) {
+            if (item.pricing === 'paid') item.always247 = true;
+            else if (NO_247.includes(item.name)) item.always247 = false;
+            else if (YES_247_FREE.includes(item.name)) item.always247 = true;
+            else if (item.type === 'self') item.always247 = 'host';
+            else item.always247 = null;
+        }
+    });
+
+    // --- ICONS (inline SVG, no external font) ---
+    const ICONS = {
+        search: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+        tag: '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
+        filter: '<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>',
+        sort: '<line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/>',
+        ram: '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+        storage: '<line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/>',
+        cpu: '<rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/>',
+        clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+        unlock: '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>',
+        list: '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>',
+        check: '<polyline points="20 6 9 17 4 12"/>'
+    };
+
+    function icon(name) {
+        return '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[name] || '') + '</svg>';
+    }
+
+    function hydrateIcons() {
+        document.querySelectorAll('i[data-icon]').forEach(el => { el.innerHTML = icon(el.dataset.icon); });
+    }
+
     let currentFilter = 'all';
+    let currentPricing = 'all';
     let currentSort = 'default';
     let searchQuery = '';
+    const featureFilters = { cracked: false, always247: false };
+
+    function crackedTag(v) {
+        if (v === true) return '<span class="feat-tag feat-yes">' + icon('unlock') + ' Cracked: Yes</span>';
+        if (v === false) return '<span class="feat-tag feat-no">' + icon('unlock') + ' Cracked: No</span>';
+        return '<span class="feat-tag feat-unk">' + icon('unlock') + ' Cracked: Unconfirmed</span>';
+    }
+
+    function tag247(v) {
+        if (v === true) return '<span class="feat-tag feat-yes">' + icon('clock') + ' 24/7: Yes</span>';
+        if (v === false) return '<span class="feat-tag feat-no">' + icon('clock') + ' 24/7: No</span>';
+        if (v === 'host') return '<span class="feat-tag feat-host">' + icon('clock') + ' 24/7: Depends on your PC</span>';
+        return '<span class="feat-tag feat-unk">' + icon('clock') + ' 24/7: Unconfirmed</span>';
+    }
+
+    function plansBlock(item) {
+        if (!item.plans || !item.plans.length) return '';
+        const rows = item.plans.map(pl => `
+            <div class="plan-row">
+                <div>
+                    <div class="plan-name">${pl.n}</div>
+                    <div class="plan-desc">${pl.d}</div>
+                </div>
+                <div class="plan-price">${pl.p}</div>
+            </div>`).join('');
+        const note = item.planNote ? `<div class="plans-note">${item.planNote}</div>` : '';
+        return `<details class="plans"><summary>${icon('list')} Plans (${item.plans.length})</summary>${rows}${note}</details>`;
+    }
 
     function render() {
         const listContainer = document.getElementById("host-list");
+        const countEl = document.getElementById("result-count");
         
-        // 1. Filter by category & search query
+        // 1. Filter by pricing, category, features & search query
         let filtered = masterList.filter(item => {
             const matchesType = currentFilter === 'all' || item.type === currentFilter;
+            const matchesPricing = currentPricing === 'all' || item.pricing === currentPricing;
+            const matchesCracked = !featureFilters.cracked || item.cracked === true;
+            const matches247 = !featureFilters.always247 || item.always247 === true;
             const matchesSearch = item.name.toLowerCase().includes(searchQuery) || 
                                   item.cpu.toLowerCase().includes(searchQuery) ||
                                   (item.displayRam && item.displayRam.toLowerCase().includes(searchQuery));
-            return matchesType && matchesSearch;
+            return matchesType && matchesPricing && matchesCracked && matches247 && matchesSearch;
         });
 
         // 2. Sort data
@@ -696,9 +970,11 @@
             filtered.sort((a, b) => a.name.localeCompare(b.name));
         }
 
+        countEl.textContent = filtered.length + (filtered.length === 1 ? ' result' : ' results');
+
         // 3. Handle Empty
         if (filtered.length === 0) {
-            listContainer.innerHTML = '<div class="empty-state"><i class="fas fa-search" style="font-size: 2rem; margin-bottom: 12px;"></i><p>No hosting services match your search criteria.</p></div>';
+            listContainer.innerHTML = '<div class="empty-state"><p>No hosting services match your search criteria.</p></div>';
             return;
         }
 
@@ -708,25 +984,37 @@
                 <div>
                     <div class="card-header">
                         <h3 class="host-name">${item.name}</h3>
-                        <span class="type-badge ${item.type === 'web' ? 'badge-web' : 'badge-self'}">
-                            ${item.type === 'web' ? 'Web Host' : 'Tool / Mod'}
-                        </span>
+                        <div class="badge-stack">
+                            <span class="type-badge ${item.pricing === 'paid' ? 'badge-paid' : 'badge-free'}">
+                                ${item.pricing === 'paid' ? 'Paid' : 'Free'}
+                            </span>
+                            <span class="type-badge ${item.type === 'web' ? 'badge-web' : 'badge-self'}">
+                                ${item.type === 'web' ? 'Web Host' : 'Tool / Mod'}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="tag-row">
+                        ${crackedTag(item.cracked)}
+                        ${tag247(item.always247)}
                     </div>
 
                     <div class="specs-list">
                         <div class="spec-item">
-                            <span class="spec-label"><i class="fas fa-memory"></i> RAM</span>
+                            <span class="spec-label">${icon('ram')} RAM</span>
                             <span class="spec-value">${item.displayRam ? item.displayRam : item.ram + ' GB'}</span>
                         </div>
                         <div class="spec-item">
-                            <span class="spec-label"><i class="fas fa-hdd"></i> Storage</span>
+                            <span class="spec-label">${icon('storage')} Storage</span>
                             <span class="spec-value">${item.storage}</span>
                         </div>
                     </div>
+
+                    ${plansBlock(item)}
                 </div>
 
                 <div class="cpu-box">
-                    <i class="fas fa-microchip"></i>
+                    ${icon('cpu')}
                     <span class="cpu-text" title="${item.cpu}">${item.cpu}</span>
                 </div>
             </div>
@@ -737,6 +1025,19 @@
         currentFilter = type;
         document.querySelectorAll('#categoryGroup .pill-btn').forEach(btn => btn.classList.remove('active'));
         btnElement.classList.add('active');
+        render();
+    }
+
+    function filterPricing(pricing, btnElement) {
+        currentPricing = pricing;
+        document.querySelectorAll('#pricingGroup .pill-btn').forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+        render();
+    }
+
+    function toggleFeature(key, btnElement) {
+        featureFilters[key] = !featureFilters[key];
+        btnElement.classList.toggle('active', featureFilters[key]);
         render();
     }
 
@@ -752,7 +1053,7 @@
         render();
     }
 
-    window.onload = () => render();
+    window.onload = () => { hydrateIcons(); render(); };
     </script>
 
 </body>
