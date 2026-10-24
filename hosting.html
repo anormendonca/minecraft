@@ -775,7 +775,7 @@
             { n: "Budget", d: "Per-GB RAM", p: "$1/GB" },
             { n: "Premium", d: "Per-GB RAM, one-click modpacks, daily + hourly backups, extra locations", p: "$2.25/GB" }
           ] },
-        { name: "Sparked Host", ram: 32.0, storage: "NVMe", cpu: "Up to Ryzen 9 9900X", power: 5, type: "web", pricing: "paid", displayRam: "Per-GB", cracked: null,
+        { name: "Sparked Host", ram: 32.0, storage: "NVMe", cpu: "Up to Ryzen 9 9900X", power: 5, type: "web", pricing: "paid", displayRam: "Per-GB", cracked: true,
           plans: [
             { n: "Budget", d: "Per-GB RAM, entry hardware", p: "$1/GB" },
             { n: "Enterprise", d: "Per-GB RAM, faster hardware", p: "$2.59/GB" },
@@ -869,13 +869,13 @@
     // cracked: true / false / null (null = not confirmed)
     // always247: true / false / 'host' (depends on your own PC) / null (not confirmed)
     const CRACKED_YES = [
-        "Aternos", "Oracle Cloud ARM", "Oracle Cloud AMD", "GCP Always Free Tier", "Github Codespaces", "Google Colab", "Server.pro",
+        "Aternos", "Minefort", "Oracle Cloud ARM", "Oracle Cloud AMD", "GCP Always Free Tier", "Github Codespaces", "Google Colab", "Server.pro",
         "Playit.gg", "Pinggy", "Ngrok", "Portmap.io", "LocalXpose", "Tailscale", "ZeroTier One", "WireGuard Mesh", "Radmin VPN", "Hamachi",
         "Cloudflare Warp", "Bore (Tunnel Tool)", "Frp (Fast Reverse Proxy)", "Chisel Tunnel", "Rathole Tunnel", "Cloudflare Tunnel", "Zrok",
         "Packetriot", "Crafty Controller", "Pterodactyl Panel", "PufferPanel", "LinuxGSM", "Velocity Proxy", "NetBird", "SoftEther VPN",
         "Localtunnel", "Inlets", "PageKite", "SakuraFrp", "Pangolin"
     ];
-    const NO_247 = ["Aternos", "Minehut", "Github Codespaces", "Google Colab"];
+    const NO_247 = ["Aternos", "Minehut", "Minefort", "FalixNodes", "Github Codespaces", "Google Colab"];
     const YES_247_FREE = ["Oracle Cloud ARM", "Oracle Cloud AMD", "GCP Always Free Tier"];
 
     masterList.forEach(item => {
@@ -921,14 +921,19 @@
     function crackedTag(v) {
         if (v === true) return '<span class="feat-tag feat-yes">' + icon('unlock') + ' Cracked: Yes</span>';
         if (v === false) return '<span class="feat-tag feat-no">' + icon('unlock') + ' Cracked: No</span>';
-        return '<span class="feat-tag feat-unk">' + icon('unlock') + ' Cracked: Unconfirmed</span>';
+        return '';
     }
 
     function tag247(v) {
         if (v === true) return '<span class="feat-tag feat-yes">' + icon('clock') + ' 24/7: Yes</span>';
         if (v === false) return '<span class="feat-tag feat-no">' + icon('clock') + ' 24/7: No</span>';
         if (v === 'host') return '<span class="feat-tag feat-host">' + icon('clock') + ' 24/7: Depends on your PC</span>';
-        return '<span class="feat-tag feat-unk">' + icon('clock') + ' 24/7: Unconfirmed</span>';
+        return '';
+    }
+
+    function featureTags(item) {
+        const t = crackedTag(item.cracked) + tag247(item.always247);
+        return t ? '<div class="tag-row">' + t + '</div>' : '';
     }
 
     function plansBlock(item) {
@@ -994,10 +999,7 @@
                         </div>
                     </div>
 
-                    <div class="tag-row">
-                        ${crackedTag(item.cracked)}
-                        ${tag247(item.always247)}
-                    </div>
+                    ${featureTags(item)}
 
                     <div class="specs-list">
                         <div class="spec-item">
