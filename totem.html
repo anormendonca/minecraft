@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ntrxi - Custom Totem Studio & Generator</title>
     
-    <!-- Fonts & Icons -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- JSZip for client-side Minecraft Resource Pack generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -54,6 +53,21 @@
             -webkit-font-smoothing: antialiased;
             position: relative;
         }
+
+        /* Inline SVG icons (no icon font needed) */
+        .ico {
+            width: 1em;
+            height: 1em;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            vertical-align: -0.125em;
+            flex-shrink: 0;
+        }
+        i[data-icon] { display: inline-flex; align-items: center; font-style: normal; }
+        .card-label { display: inline-flex; align-items: center; gap: 8px; }
 
         /* --- NOISE GRAIN OVERLAY --- */
         .grain-overlay {
@@ -474,6 +488,7 @@
             border: 2px solid rgba(255,255,255,0.2);
             border-radius: 8px;
             cursor: crosshair;
+            touch-action: none;
             background-color: #1a1d24;
             background-image: 
                 linear-gradient(45deg, #14171d 25%, transparent 25%), 
@@ -522,7 +537,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 1.05rem;
             transition: all 0.2s ease;
         }
 
@@ -567,7 +582,7 @@
         .skin-input-box {
             display: flex;
             gap: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
         .skin-input-box input {
@@ -595,11 +610,24 @@
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .skin-convert-btn:hover {
             transform: scale(1.03);
         }
+
+        .skin-status {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            min-height: 1.4em;
+            line-height: 1.5;
+        }
+
+        .skin-status.error { color: var(--danger); }
+        .skin-status.ok { color: var(--success); }
 
         /* --- TAB 4: PACK EXPORT SETTINGS --- */
         .setting-row {
@@ -687,7 +715,7 @@
 
     <!-- TOAST NOTIFICATION -->
     <div id="toast" class="toast">
-        <i class="fas fa-check-circle"></i>
+        <i data-icon="check"></i>
         <span id="toastMsg">Totem updated!</span>
     </div>
 
@@ -713,25 +741,25 @@
             
             <!-- LEFT: TOTEM LIVE PREVIEW & POP TESTER -->
             <div class="preview-card">
-                <div class="card-label"><i class="fas fa-cube"></i> Live Totem Stage</div>
+                <div class="card-label"><i data-icon="cube"></i> Live Totem Stage</div>
 
                 <div id="canvasStage" class="canvas-stage glint">
-                    <canvas id="totemDisplayCanvas" width="16" height="16" title="Click to trigger Totem Pop!"></canvas>
+                    <canvas id="totemDisplayCanvas" width="16" height="16" title="Click to trigger Totem Pop!" onclick="triggerTotemPop()"></canvas>
                 </div>
 
                 <button class="pop-trigger-btn" onclick="triggerTotemPop()">
-                    <i class="fas fa-bolt"></i> Test Totem Pop FX
+                    <i data-icon="bolt"></i> Test Totem Pop FX
                 </button>
 
                 <div class="action-btn-group">
                     <button class="action-btn" onclick="downloadJavaPack()">
-                        <i class="fas fa-cube"></i> Java Pack (.zip)
+                        <i data-icon="cube"></i> Java Pack (.zip)
                     </button>
                     <button class="action-btn outline" onclick="downloadBedrockPack()">
-                        <i class="fas fa-cubes"></i> Bedrock Pack (.mcpack)
+                        <i data-icon="package"></i> Bedrock Pack (.mcpack)
                     </button>
                     <button class="action-btn outline" onclick="downloadTotemPng()">
-                        <i class="fas fa-image"></i> Download Texture PNG
+                        <i data-icon="image"></i> Download Texture PNG
                     </button>
                 </div>
             </div>
@@ -740,17 +768,17 @@
                 
                 <!-- Tab Navigation -->
                 <div class="studio-tabs">
-                    <button class="tab-btn active" onclick="switchStudioTab('presets')">
-                        <i class="fas fa-shapes"></i> Presets
+                    <button class="tab-btn active" onclick="switchStudioTab('presets', this)">
+                        <i data-icon="grid"></i> Presets
                     </button>
-                    <button class="tab-btn" onclick="switchStudioTab('editor')">
-                        <i class="fas fa-paint-brush"></i> Pixel Editor
+                    <button class="tab-btn" onclick="switchStudioTab('editor', this)">
+                        <i data-icon="brush"></i> Pixel Editor
                     </button>
-                    <button class="tab-btn" onclick="switchStudioTab('skin')">
-                        <i class="fas fa-user-astronaut"></i> Skin Converter
+                    <button class="tab-btn" onclick="switchStudioTab('skin', this)">
+                        <i data-icon="user"></i> Skin Converter
                     </button>
-                    <button class="tab-btn" onclick="switchStudioTab('export')">
-                        <i class="fas fa-sliders-h"></i> Pack Settings
+                    <button class="tab-btn" onclick="switchStudioTab('export', this)">
+                        <i data-icon="sliders"></i> Pack Settings
                     </button>
                 </div>
 
@@ -771,10 +799,10 @@
                             <div class="tool-group">
                                 <div class="tool-title">Tools</div>
                                 <div class="tool-buttons-row">
-                                    <button class="tool-icon-btn active" id="toolPencil" onclick="setTool('pencil')" title="Pencil"><i class="fas fa-pencil-alt"></i></button>
-                                    <button class="tool-icon-btn" id="toolEraser" onclick="setTool('eraser')" title="Eraser"><i class="fas fa-eraser"></i></button>
-                                    <button class="tool-icon-btn" id="toolPicker" onclick="setTool('picker')" title="Color Eyedropper"><i class="fas fa-eye-dropper"></i></button>
-                                    <button class="tool-icon-btn" id="toolFill" onclick="setTool('fill')" title="Fill Bucket"><i class="fas fa-fill-drip"></i></button>
+                                    <button class="tool-icon-btn active" id="toolPencil" onclick="setTool('pencil')" title="Pencil"><i data-icon="pencil"></i></button>
+                                    <button class="tool-icon-btn" id="toolEraser" onclick="setTool('eraser')" title="Eraser"><i data-icon="eraser"></i></button>
+                                    <button class="tool-icon-btn" id="toolPicker" onclick="setTool('picker')" title="Color Eyedropper"><i data-icon="picker"></i></button>
+                                    <button class="tool-icon-btn" id="toolFill" onclick="setTool('fill')" title="Fill Bucket"><i data-icon="bucket"></i></button>
                                 </div>
                             </div>
 
@@ -793,15 +821,16 @@
                         Enter a Minecraft username to convert their skin head, body, and armor overlay into a Totem of Undying!
                     </p>
                     <div class="skin-input-box">
-                        <input type="text" id="skinInput" placeholder="Enter username (e.g. ntrxi, DanTDM)" value="">
-                        <button class="skin-convert-btn" onclick="convertSkinToTotem()"><i class="fas fa-magic"></i> Convert</button>
+                        <input type="text" id="skinInput" placeholder="Enter username (e.g. ntrxi, DanTDM)" value="" onkeypress="if(event.key==='Enter') convertSkinToTotem()" autocomplete="off" spellcheck="false">
+                        <button class="skin-convert-btn" onclick="convertSkinToTotem()"><i data-icon="wand"></i> Convert</button>
                     </div>
+                    <div id="skinStatus" class="skin-status"></div>
                 </div>
 
                 <!-- TAB 4: PACK SETTINGS -->
                 <div id="tab-export" class="tab-panel">
                     <div class="setting-row">
-                        <span class="setting-label"><i class="fas fa-code-branch"></i> Java Pack Format</span>
+                        <span class="setting-label"><i data-icon="branch"></i> Java Pack Format</span>
                         <select id="packFormatSelect" class="select-pill">
                             <option value="34" selected>1.21+ (Format 34)</option>
                             <option value="18">1.20 - 1.20.4 (Format 18)</option>
@@ -812,12 +841,12 @@
                     </div>
 
                     <div class="setting-row">
-                        <span class="setting-label"><i class="fas fa-tag"></i> Resource Pack Name</span>
+                        <span class="setting-label"><i data-icon="tag"></i> Resource Pack Name</span>
                         <input type="text" id="packNameInput" class="input-pill" value="Custom Totem Pack">
                     </div>
 
                     <div class="setting-row">
-                        <span class="setting-label"><i class="fas fa-wand-magic-sparkles"></i> Enchantment Glint Overlay</span>
+                        <span class="setting-label"><i data-icon="star"></i> Enchantment Glint Overlay</span>
                         <input type="checkbox" id="glintToggle" checked onchange="toggleGlint(this.checked)">
                     </div>
                 </div>
@@ -841,13 +870,42 @@
     </footer>
 
     <script>
+    // --- ICONS (inline SVG) ---
+    const ICONS = {
+        check: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+        cube: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
+        package: '<line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
+        bolt: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+        image: '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>',
+        grid: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>',
+        brush: '<path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>',
+        user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+        sliders: '<line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>',
+        pencil: '<path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>',
+        eraser: '<path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>',
+        picker: '<path d="m2 22 1-1h3l9-9"/><path d="M3 21v-3l9-9"/><path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"/>',
+        bucket: '<path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z"/><path d="m5 2 5 5"/><path d="M2 13h15"/><path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z"/>',
+        wand: '<path d="M15 4V2"/><path d="M15 16v-2"/><path d="M8 9h2"/><path d="M20 9h2"/><path d="M17.8 11.8 19 13"/><path d="M15 9h.01"/><path d="M17.8 6.2 19 5"/><path d="m3 21 9-9"/><path d="M12.2 6.2 11 5"/>',
+        branch: '<line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',
+        tag: '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
+        star: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>'
+    };
+
+    function icon(name) {
+        return '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">' + (ICONS[name] || '') + '</svg>';
+    }
+
+    function hydrateIcons() {
+        document.querySelectorAll('i[data-icon]').forEach(el => { el.innerHTML = icon(el.dataset.icon); });
+    }
+
     // --- GLOBAL STATE ---
     let currentTotemName = "Classic Gold Totem";
     const mainCanvas = document.getElementById('totemDisplayCanvas');
-    const mainCtx = mainCanvas.getContext('2d');
+    const mainCtx = mainCanvas.getContext('2d', { willReadFrequently: true });
     
     const editorCanvas = document.getElementById('editorGridCanvas');
-    const editorCtx = editorCanvas.getContext('2d');
+    const editorCtx = editorCanvas.getContext('2d', { willReadFrequently: true });
 
     let currentTool = 'pencil';
     let currentColor = '#fbc531';
@@ -860,177 +918,261 @@
     ];
 
     let audioCtx = null;
+    let popRaf = null;
 
+    function getAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        return audioCtx;
+    }
+
+    // Totem sound, built from scratch with the Web Audio API:
+    // soft thump -> airy whoosh -> rising "wooo" -> sparkle chimes.
+    // Everything goes through a compressor so it never clips or crackles.
     function playTotemPopSound() {
         try {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const ctx = getAudio();
+            const t0 = ctx.currentTime + 0.03;
+
+            const master = ctx.createGain();
+            master.gain.value = 0.7;
+            const comp = ctx.createDynamicsCompressor();
+            comp.threshold.value = -18;
+            comp.knee.value = 20;
+            comp.ratio.value = 6;
+            comp.attack.value = 0.003;
+            comp.release.value = 0.25;
+            master.connect(comp);
+            comp.connect(ctx.destination);
+
+            function tone(o) {
+                const osc = ctx.createOscillator();
+                const g = ctx.createGain();
+                osc.type = o.type || 'sine';
+                osc.frequency.setValueAtTime(o.f0, o.start);
+                if (o.f1) osc.frequency.exponentialRampToValueAtTime(o.f1, o.start + o.dur);
+
+                g.gain.setValueAtTime(0.0001, o.start);
+                g.gain.exponentialRampToValueAtTime(o.peak, o.start + (o.attack || 0.01));
+                g.gain.exponentialRampToValueAtTime(0.0001, o.start + o.dur);
+
+                if (o.vibrato) {
+                    const lfo = ctx.createOscillator();
+                    const lg = ctx.createGain();
+                    lfo.frequency.value = o.vibratoRate || 6;
+                    lg.gain.value = o.vibrato;
+                    lfo.connect(lg);
+                    lg.connect(osc.frequency);
+                    lfo.start(o.start);
+                    lfo.stop(o.start + o.dur + 0.05);
+                }
+
+                osc.connect(g);
+                g.connect(master);
+                osc.start(o.start);
+                osc.stop(o.start + o.dur + 0.05);
             }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
 
-            const now = audioCtx.currentTime;
+            // 1. Soft low thump
+            tone({ type: 'sine', f0: 140, f1: 45, start: t0, dur: 0.3, peak: 0.3, attack: 0.005 });
 
-            // Frequency chime chord (Resonating golden chime)
-            const freqs = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
-            freqs.forEach((freq, idx) => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
+            // 2. Airy whoosh (filtered noise sweeping upward)
+            const len = Math.floor(ctx.sampleRate * 0.6);
+            const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+            const noise = ctx.createBufferSource();
+            noise.buffer = buf;
+            const bp = ctx.createBiquadFilter();
+            bp.type = 'bandpass';
+            bp.Q.value = 1.1;
+            bp.frequency.setValueAtTime(300, t0);
+            bp.frequency.exponentialRampToValueAtTime(3200, t0 + 0.45);
+            const ng = ctx.createGain();
+            ng.gain.setValueAtTime(0.0001, t0);
+            ng.gain.exponentialRampToValueAtTime(0.16, t0 + 0.14);
+            ng.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.5);
+            noise.connect(bp);
+            bp.connect(ng);
+            ng.connect(master);
+            noise.start(t0);
+            noise.stop(t0 + 0.6);
 
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(freq, now);
-                osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + 0.8);
+            // 3. Rising "wooo" with a little vibrato (two layered voices)
+            tone({ type: 'triangle', f0: 330, f1: 990, start: t0 + 0.04, dur: 0.75, peak: 0.12, attack: 0.12, vibrato: 7, vibratoRate: 7 });
+            tone({ type: 'sine', f0: 165, f1: 495, start: t0 + 0.08, dur: 0.75, peak: 0.1, attack: 0.15 });
 
-                gain.gain.setValueAtTime(0.25, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2 + (idx * 0.1));
-
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-
-                osc.start(now);
-                osc.stop(now + 1.4);
+            // 4. Sparkle chimes (bell-like: fundamental + inharmonic partial)
+            const notes = [1318.5, 1568.0, 1975.5, 2637.0];
+            notes.forEach((f, i) => {
+                const st = t0 + 0.3 + i * 0.075;
+                tone({ type: 'sine', f0: f, start: st, dur: 0.9, peak: 0.07, attack: 0.005 });
+                tone({ type: 'sine', f0: f * 2.756, start: st, dur: 0.35, peak: 0.02, attack: 0.005 });
             });
-
-            // Low resonance thud
-            const bass = audioCtx.createOscillator();
-            const bassGain = audioCtx.createGain();
-            bass.type = 'sine';
-            bass.frequency.setValueAtTime(150, now);
-            bass.frequency.exponentialRampToValueAtTime(40, now + 0.5);
-
-            bassGain.gain.setValueAtTime(0.5, now);
-            bassGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-
-            bass.connect(bassGain);
-            bassGain.connect(audioCtx.destination);
-
-            bass.start(now);
-            bass.stop(now + 0.6);
-
         } catch (e) {
             console.log('Audio error:', e);
         }
     }
 
-    // --- FIX 1: TOTEM POP ANIMATION ENGINE (PARTICLES + TOTEM FLOAT FX) ---
+    function easeOutBack(t) {
+        const c1 = 1.70158, c3 = c1 + 1;
+        return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    }
+
+    function easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+    }
+
+    // --- TOTEM POP ANIMATION ---
+    // The totem rises and pops in the middle of the screen, hovers, then fades,
+    // while green and gold pixel particles burst outward (like the in-game effect).
     function triggerTotemPop() {
         playTotemPopSound();
 
-        // Screen Flash
+        if (popRaf) cancelAnimationFrame(popRaf);
+
+        // soft screen tint
         const flash = document.getElementById('popFlash');
         flash.classList.add('active');
-        setTimeout(() => flash.classList.remove('active'), 200);
+        setTimeout(() => flash.classList.remove('active'), 220);
 
-        // Canvas Overlay Setup
+        // crisp overlay canvas (handles high-DPI screens)
         const popCanvas = document.getElementById('popCanvas');
-        popCanvas.width = window.innerWidth;
-        popCanvas.height = window.innerHeight;
-        const pCtx = popCanvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const W = window.innerWidth;
+        const H = window.innerHeight;
+        popCanvas.width = Math.round(W * dpr);
+        popCanvas.height = Math.round(H * dpr);
+        const ctx = popCanvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
+        const cx = W / 2;
+        const cy = H / 2 - 10;
+        const palette = ['#2ecc40', '#7bed9f', '#a3e635', '#fbc531', '#ffe066', '#fff6a8', '#ffffff'];
         const particles = [];
-        const colors = ['#fbc531', '#4cd137', '#ffffff', '#ffd700', '#00ff7f'];
 
-        // Particle Burst
-        for (let i = 0; i < 85; i++) {
-            particles.push({
-                x: window.innerWidth / 2,
-                y: window.innerHeight / 2 - 20,
-                vx: (Math.random() - 0.5) * 26,
-                vy: (Math.random() - 0.7) * 26,
-                size: Math.random() * 8 + 4,
-                color: colors[Math.floor(Math.random() * colors.length)],
-                alpha: 1,
-                decay: Math.random() * 0.02 + 0.015
-            });
+        function burst(n) {
+            for (let i = 0; i < n; i++) {
+                const ang = Math.random() * Math.PI * 2;
+                const sp = 2 + Math.random() * 9;
+                particles.push({
+                    x: cx + (Math.random() - 0.5) * 40,
+                    y: cy + (Math.random() - 0.5) * 40,
+                    vx: Math.cos(ang) * sp,
+                    vy: Math.sin(ang) * sp - 2,
+                    size: 4 + Math.random() * 6,
+                    color: palette[Math.floor(Math.random() * palette.length)],
+                    life: 0,
+                    max: 700 + Math.random() * 700
+                });
+            }
         }
 
-        const startTime = performance.now();
-        const totalDuration = 1200; // 1.2 seconds animation
+        burst(70);
+        let secondBurst = false;
 
-        function animatePop(now) {
-            const elapsed = now - startTime;
-            pCtx.clearRect(0, 0, popCanvas.width, popCanvas.height);
+        const DURATION = 1700;
+        const BASE = 200;
+        const start = performance.now();
+        let last = start;
 
-            let active = false;
+        function frame(now) {
+            const el = now - start;
+            const dtMs = Math.min(40, now - last);
+            const dt = dtMs / 16.67;
+            last = now;
 
-            // 1. Draw Burst Particles
+            ctx.clearRect(0, 0, W, H);
+
+            if (!secondBurst && el > 140) {
+                secondBurst = true;
+                burst(50);
+            }
+
+            // particles
+            let alive = false;
             particles.forEach(p => {
-                if (p.alpha > 0) {
-                    active = true;
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.vy += 0.45; // Gravity
-                    p.alpha -= p.decay;
+                p.life += dtMs;
+                const t = p.life / p.max;
+                if (t >= 1) return;
+                alive = true;
 
-                    pCtx.globalAlpha = Math.max(0, p.alpha);
-                    pCtx.fillStyle = p.color;
-                    pCtx.fillRect(p.x, p.y, p.size, p.size);
-                }
+                p.vx *= Math.pow(0.95, dt);
+                p.vy *= Math.pow(0.95, dt);
+                p.vy += 0.12 * dt;
+                p.x += p.vx * dt;
+                p.y += p.vy * dt;
+
+                const size = p.size * (1 - 0.6 * t);
+                ctx.globalAlpha = Math.max(0, 1 - t * t);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(Math.round(p.x), Math.round(p.y), size, size);
             });
+            ctx.globalAlpha = 1;
 
-            // 2. Draw Totem Image Pop in Screen Center
-            if (elapsed < totalDuration) {
-                active = true;
-                const progress = elapsed / totalDuration;
+            // totem
+            let itemActive = el < DURATION;
+            if (itemActive) {
+                const p = el / DURATION;
+                let scale, alpha, yOff, rot;
 
-                let scale, alpha, rotate;
-                if (progress < 0.25) {
-                    // Rapid scale expand
-                    const t = progress / 0.25;
-                    scale = 0.3 + t * 1.5;
-                    alpha = Math.min(1, t * 1.5);
-                    rotate = (1 - t) * -0.15;
-                } else if (progress < 0.7) {
-                    // Floating wobble
-                    const t = (progress - 0.25) / 0.45;
-                    scale = 1.8 - Math.sin(t * Math.PI * 2) * 0.08;
+                if (p < 0.22) {                       // rise + pop in
+                    const t = p / 0.22;
+                    scale = 0.15 + 0.85 * easeOutBack(t);
+                    alpha = Math.min(1, t * 2);
+                    yOff = (1 - easeOutCubic(t)) * 90;
+                    rot = (1 - t) * -0.12;
+                } else if (p < 0.75) {                // hover
+                    const h = (p - 0.22) / 0.53;
+                    scale = 1 + 0.03 * Math.sin(h * Math.PI * 2);
                     alpha = 1;
-                    rotate = Math.sin(t * Math.PI * 3) * 0.06;
-                } else {
-                    // Fade out
-                    const t = (progress - 0.7) / 0.3;
-                    scale = 1.8 + t * 0.3;
-                    alpha = 1 - t;
-                    rotate = 0;
+                    yOff = -Math.sin(h * Math.PI * 2) * 4;
+                    rot = 0.05 * Math.sin(h * Math.PI * 4);
+                } else {                              // fade away
+                    const f = (p - 0.75) / 0.25;
+                    scale = 1.03 + 0.12 * f;
+                    alpha = 1 - f;
+                    yOff = -f * 30;
+                    rot = 0;
                 }
 
-                const centerX = popCanvas.width / 2;
-                const centerY = popCanvas.height / 2 - 20;
-                const baseSize = 160;
-                const drawW = baseSize * scale;
-                const drawH = baseSize * scale;
+                const size = BASE * scale;
 
-                pCtx.save();
-                pCtx.globalAlpha = Math.max(0, alpha);
-                pCtx.translate(centerX, centerY);
-                pCtx.rotate(rotate);
+                ctx.save();
+                ctx.translate(cx, cy + yOff);
+                ctx.rotate(rot);
 
-                // Radial golden aura glow
-                const radialGlow = pCtx.createRadialGradient(0, 0, 10, 0, 0, drawW * 0.85);
-                radialGlow.addColorStop(0, 'rgba(251, 197, 49, 0.65)');
-                radialGlow.addColorStop(0.5, 'rgba(76, 209, 55, 0.3)');
-                radialGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-                pCtx.fillStyle = radialGlow;
-                pCtx.beginPath();
-                pCtx.arc(0, 0, drawW * 0.85, 0, Math.PI * 2);
-                pCtx.fill();
+                // soft green/gold glow behind the totem
+                const r = size * 0.9;
+                const glow = ctx.createRadialGradient(0, 0, size * 0.1, 0, 0, r);
+                glow.addColorStop(0, 'rgba(160, 240, 110, 0.5)');
+                glow.addColorStop(0.5, 'rgba(251, 197, 49, 0.2)');
+                glow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                ctx.globalAlpha = Math.max(0, alpha) * 0.9;
+                ctx.fillStyle = glow;
+                ctx.beginPath();
+                ctx.arc(0, 0, r, 0, Math.PI * 2);
+                ctx.fill();
 
-                // Crisp Pixel Totem rendering
-                pCtx.imageSmoothingEnabled = false;
-                pCtx.drawImage(mainCanvas, -drawW / 2, -drawH / 2, drawW, drawH);
-                pCtx.restore();
+                // crisp pixel totem
+                ctx.globalAlpha = Math.max(0, alpha);
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(mainCanvas, -size / 2, -size / 2, size, size);
+                ctx.restore();
             }
 
-            if (active) {
-                requestAnimationFrame(animatePop);
+            if (itemActive || alive) {
+                popRaf = requestAnimationFrame(frame);
             } else {
-                pCtx.clearRect(0, 0, popCanvas.width, popCanvas.height);
+                ctx.clearRect(0, 0, W, H);
+                popRaf = null;
             }
         }
 
-        requestAnimationFrame(animatePop);
-        showToast("✨ Totem Pop Activated!");
+        popRaf = requestAnimationFrame(frame);
+        showToast("Totem Pop Activated!");
     }
 
     // --- PRESETS ENGINE ---
@@ -1102,9 +1244,10 @@
     };
 
     window.onload = function() {
+        hydrateIcons();
         renderPresetGrid();
         renderPalette();
-        loadPreset('gold');
+        loadPreset('gold', true);
         setupEditorEvents();
     };
 
@@ -1160,12 +1303,12 @@
         document.getElementById(`tool${tool.charAt(0).toUpperCase() + tool.slice(1)}`).classList.add('active');
     }
 
-    function loadPreset(key) {
+    function loadPreset(key, silent) {
         if (PRESETS[key]) {
             PRESETS[key].draw(mainCtx);
             PRESETS[key].draw(editorCtx);
             currentTotemName = PRESETS[key].name;
-            showToast(`Loaded ${PRESETS[key].name}`);
+            if (!silent) showToast(`Loaded ${PRESETS[key].name}`);
         }
     }
 
@@ -1174,11 +1317,39 @@
         mainCtx.drawImage(editorCanvas, 0, 0);
     }
 
-    // --- EDITOR CANVAS INTERACTION ---
+    // --- EDITOR CANVAS INTERACTION (mouse + touch) ---
     function setupEditorEvents() {
-        editorCanvas.addEventListener('mousedown', (e) => { isDrawing = true; paintPixel(e); });
-        editorCanvas.addEventListener('mousemove', (e) => { if (isDrawing) paintPixel(e); });
-        window.addEventListener('mouseup', () => isDrawing = false);
+        editorCanvas.addEventListener('pointerdown', (e) => { isDrawing = true; paintPixel(e); });
+        editorCanvas.addEventListener('pointermove', (e) => { if (isDrawing) paintPixel(e); });
+        window.addEventListener('pointerup', () => isDrawing = false);
+    }
+
+    // Real flood fill: fills the connected area of the clicked colour
+    function floodFill(x, y, hex) {
+        const img = editorCtx.getImageData(0, 0, 16, 16);
+        const d = img.data;
+        const idx = (px, py) => (py * 16 + px) * 4;
+        const start = idx(x, y);
+        const target = [d[start], d[start + 1], d[start + 2], d[start + 3]];
+
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+
+        if (target[0] === r && target[1] === g && target[2] === b && target[3] === 255) return;
+
+        const same = i => d[i] === target[0] && d[i + 1] === target[1] && d[i + 2] === target[2] && d[i + 3] === target[3];
+        const stack = [[x, y]];
+
+        while (stack.length) {
+            const [cx, cy] = stack.pop();
+            if (cx < 0 || cx >= 16 || cy < 0 || cy >= 16) continue;
+            const i = idx(cx, cy);
+            if (!same(i)) continue;
+            d[i] = r; d[i + 1] = g; d[i + 2] = b; d[i + 3] = 255;
+            stack.push([cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]);
+        }
+        editorCtx.putImageData(img, 0, 0);
     }
 
     function paintPixel(e) {
@@ -1201,51 +1372,106 @@
                 setTool('pencil');
             }
         } else if (currentTool === 'fill') {
-            editorCtx.fillStyle = currentColor;
-            editorCtx.fillRect(0, 0, 16, 16);
+            floodFill(x, y, currentColor);
+            isDrawing = false; // one fill per click
         }
 
         syncEditorToMain();
     }
 
-    // --- FIX 2 & 3: MULTI-PROVIDER SKIN FETCH & LEGACY 64x32 ARM SUPPORT ---
+    // --- SKIN LOOKUP (multiple sources, CORS-safe) ---
+    let skinLookupNotFound = false;
+
+    function fetchJson(url, timeoutMs) {
+        const ctrl = new AbortController();
+        const t = setTimeout(() => ctrl.abort(), timeoutMs || 8000);
+        return fetch(url, { signal: ctrl.signal })
+            .then(r => {
+                clearTimeout(t);
+                if (r.status === 404 || r.status === 400) { skinLookupNotFound = true; return null; }
+                return r.ok ? r.json() : null;
+            })
+            .catch(() => { clearTimeout(t); return null; });
+    }
+
+    function loadSkinImage(src) {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            image.crossOrigin = "anonymous";
+            image.onload = () => {
+                if (image.naturalWidth >= 64 && image.naturalHeight >= 32) resolve(image);
+                else reject(new Error("Unexpected skin size"));
+            };
+            image.onerror = () => reject(new Error("Failed to load skin image"));
+            image.src = src;
+        });
+    }
+
+    // Returns skin image URLs to try, best first
+    async function getSkinCandidates(username) {
+        const enc = encodeURIComponent(username);
+        const list = [];
+        skinLookupNotFound = false;
+
+        // 1. Ashcon returns the skin as base64, so there are no cross-origin problems
+        const a = await fetchJson(`https://api.ashcon.app/mojang/v2/user/${enc}`);
+        if (a && a.textures && a.textures.skin) {
+            if (a.textures.skin.data) list.push('data:image/png;base64,' + a.textures.skin.data);
+            if (a.textures.skin.url) list.push(a.textures.skin.url);
+        }
+
+        // 2. PlayerDB (skin texture straight from Mojang's texture server)
+        if (!list.length) {
+            const p = await fetchJson(`https://playerdb.co/api/player/minecraft/${enc}`);
+            const pl = p && p.data && p.data.player;
+            if (pl && pl.skin_texture) list.push(pl.skin_texture);
+        }
+
+        // A service explicitly said this player doesn't exist - don't fall through to a default Steve skin
+        if (!list.length && skinLookupNotFound) return null;
+
+        // 3. Direct skin image providers
+        list.push(
+            `https://minotar.net/skin/${enc}`,
+            `https://crafthead.net/skin/${enc}`,
+            `https://mc-heads.net/skin/${enc}`,
+            `https://api.mineatar.io/skin/${enc}`
+        );
+        return list;
+    }
+
     async function fetchSkinImage(username) {
-        const providers = [
-            u => `https://minotar.net/skin/${encodeURIComponent(u)}`,
-            u => `https://crafthead.net/skin/${encodeURIComponent(u)}`,
-            u => `https://mc-heads.net/skin/${encodeURIComponent(u)}`,
-            u => `https://api.mineatar.io/skin/${encodeURIComponent(u)}`
-        ];
-
-        for (let i = 0; i < providers.length; i++) {
+        const candidates = await getSkinCandidates(username);
+        if (candidates === null) {
+            const err = new Error("not found");
+            err.notFound = true;
+            throw err;
+        }
+        for (const src of candidates) {
             try {
-                const img = await new Promise((resolve, reject) => {
-                    const image = new Image();
-                    image.crossOrigin = "Anonymous";
-                    image.onload = () => resolve(image);
-                    image.onerror = () => reject(new Error("Failed to load skin image"));
-                    image.src = providers[i](username);
-                });
-
-                if (img.width >= 64 && img.height >= 32) {
-                    return img;
-                }
+                return await loadSkinImage(src);
             } catch (e) {
-                console.warn(`Skin provider ${i} failed for ${username}, trying next...`);
+                console.warn('Skin source failed, trying next...', e.message);
             }
         }
         throw new Error("Unable to fetch skin from any endpoint");
+    }
+
+    function setSkinStatus(msg, type) {
+        const el = document.getElementById('skinStatus');
+        el.textContent = msg || '';
+        el.className = 'skin-status' + (type ? ' ' + type : '');
     }
 
     async function convertSkinToTotem() {
         const input = document.getElementById('skinInput').value.trim();
         if (!input) return;
 
-        showToast(`Fetching skin for ${input}...`);
+        setSkinStatus(`Fetching skin for ${input}...`);
 
         try {
             const img = await fetchSkinImage(input);
-            const isLegacy = img.height < 64; // e.g. 64x32 legacy skins like Notch
+            const isLegacy = img.naturalHeight < 64; // e.g. 64x32 legacy skins like Notch
 
             mainCtx.clearRect(0, 0, 16, 16);
             mainCtx.imageSmoothingEnabled = false;
@@ -1271,7 +1497,7 @@
                 mainCtx.drawImage(img, 36, 52, 3, 4, 11, 9, 3, 4);
                 mainCtx.drawImage(img, 52, 52, 3, 4, 11, 9, 3, 4); // Sleeve Overlay
             } else {
-                // Legacy 64x32 skin (like Notch): sample Right Arm coordinates to prevent chopped-off arms
+                // Legacy 64x32 skin (like Notch): reuse the right arm so nothing is cut off
                 mainCtx.drawImage(img, 44, 20, 3, 4, 11, 9, 3, 4);
             }
 
@@ -1281,19 +1507,24 @@
             editorCtx.drawImage(mainCanvas, 0, 0);
 
             currentTotemName = `${input}'s Totem`;
+            setSkinStatus(`Converted ${input}'s skin to a Totem!`, 'ok');
             showToast(`Converted ${input}'s skin to Totem!`);
         } catch (err) {
-            showToast(`Failed to load skin for "${input}".`);
             console.error(err);
+            if (err.notFound) {
+                setSkinStatus(`No Minecraft player found for "${input}". Check the spelling and try again.`, 'error');
+            } else {
+                setSkinStatus(`Couldn't reach any skin service for "${input}". If you opened this file inside a preview or sandbox, open it in a normal browser tab or host it online.`, 'error');
+            }
         }
     }
 
     // --- UI CONTROLS ---
-    function switchStudioTab(tab) {
+    function switchStudioTab(tab, btn) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
 
-        event.currentTarget.classList.add('active');
+        btn.classList.add('active');
         document.getElementById(`tab-${tab}`).classList.add('active');
     }
 
@@ -1311,6 +1542,14 @@
     }
 
     // --- PACK GENERATION & DOWNLOAD ENGINE ---
+    function uuidv4() {
+        if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+            const r = Math.random() * 16 | 0;
+            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+    }
+
     async function downloadJavaPack() {
         showToast("Generating Java Resource Pack...");
         const zip = new JSZip();
@@ -1339,18 +1578,19 @@
         const zip = new JSZip();
         const packName = document.getElementById('packNameInput').value || "Custom Totem";
 
+        // Fresh UUIDs per pack so two packs from this tool never clash in Minecraft
         const manifest = {
             format_version: 2,
             header: {
                 name: packName,
                 description: "Custom Totem of Undying Pack",
-                uuid: "6f123456-7890-4321-8765-123456789abc",
+                uuid: uuidv4(),
                 version: [1, 0, 0],
                 min_engine_version: [1, 16, 0]
             },
             modules: [{
                 type: "resources",
-                uuid: "9f123456-7890-4321-8765-123456789def",
+                uuid: uuidv4(),
                 version: [1, 0, 0]
             }]
         };
